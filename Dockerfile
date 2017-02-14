@@ -1,22 +1,29 @@
-FROM debian:jessie
-MAINTAINER Josh Williams <t3hpr1m3@gmail.com>
+FROM alpine:3.5
 
-ENV DEBIAN_FRONTEND noninteractive
+LABEL maintainer "Josh Williams <t3hpr1m3@gmail.com>"
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+ENV AWSCLI_VERSION 1.11.47
+
+RUN apk add --update --virtual .install-reqs \
+		build-base \
 		ca-certificates \
 		curl \
-		python \
-		unzip \
-		groff \
+		gcc && \
+	apk add groff \
 		less \
-	&& curl -sSL \
-		https://s3.amazonaws.com/aws-cli/awscli-bundle.zip \
-		-o /tmp/awscli-bundle.zip \
-	&& cd /tmp && unzip awscli-bundle.zip \
-	&& /tmp/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws \
-	&& rm -rf /tmp/awscli-bundle* \
-	&& rm -rf /var/lib/apt/lists/* \
-	&& apt-get purge -y --auto-remove
+		python \
+		py-setuptools && \
+	curl -sSL \
+		https://github.com/aws/aws-cli/archive/${AWSCLI_VERSION}.tar.gz \
+		-o /tmp/aws-cli-${AWSCLI_VERSION}.tar.gz && \
+	cd /tmp && tar -xvzf aws-cli-${AWSCLI_VERSION}.tar.gz && \
+	cd /tmp/aws-cli-${AWSCLI_VERSION} && \
+	python setup.py install && \
+	cd /tmp && \
+	rm -rf /tmp/aws-cli-${AWSCLI_VERSION}* && \
+	apk del .install-reqs && \
+	rm /var/cache/apk/*
 
-ENTRYPOINT ["/usr/local/bin/aws"]
+RUN apk add --update bash
+
+ENTRYPOINT ["/usr/bin/aws"]

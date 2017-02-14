@@ -11,12 +11,12 @@ $ docker run \
 		--rm -t \
 		-v ~/.aws:/root/.aws \
 		--name aws \
-		t3hpr1m3/awscli:latest \
+		jdubz/awscli:latest \
 		elb describe-load-balancers
 ```
 
 A simpler way to use this image is to wrap it in a shell function.  An example
-can be found [here](https://github.com/t3hpr1m3/dotfiles/blob/master/home/.docker_wrappers#L1).
+can be found [here](https://github.com/t3hpr1m3/dotfiles/blob/b057c0883410fd83622e96ef554a4f4ae25ac950/home/.docker_wrappers#L120).
 
 With this in place, the above command becomes:
 
